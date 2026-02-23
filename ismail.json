@@ -1,0 +1,16 @@
+[
+    {
+        "device_id": "e29c8c6c57e2718b",
+        "username": "8000",
+        "password": "123",
+        "expirydate": "31-12-2026",
+        "Allowoffline": true
+    },
+    {
+        "device_id": "device456",
+        "username": "user2",
+        "password": "pass456",
+        "expirydate": "31-12-2026",
+        "Allowoffline": false
+    }
+]
