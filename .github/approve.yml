@@ -1,0 +1,34 @@
+name: Approve Device ID
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  update_keys:
+    if: startsWith(github.event.issue.title, 'Approve ID:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Add ID to JSON
+        run: |
+          ID=$(echo "${{ github.event.issue.title }}" | cut -d':' -f2 | xargs)
+          python3 -c "
+          import json
+          with open('key.json', 'r+') as f:
+              data = json.load(f)
+              if '$ID' not in data['approved_devices']:
+                  data['approved_devices'].append('$ID')
+                  f.seek(0)
+                  json.dump(data, f, indent=2)
+                  f.truncate()
+          "
+          
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'Admin'
+          git config --global user.email 'admin@github.com'
+          git add key.json
+          git commit -m "Approved New ID"
+          git push
