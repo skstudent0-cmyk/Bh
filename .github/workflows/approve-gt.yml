@@ -3,6 +3,10 @@ on:
   issues:
     types: [opened]
 
+permissions:
+  contents: write
+  issues: read
+
 jobs:
   update_gt_keys:
     if: startsWith(github.event.issue.title, 'Approve GT:')
@@ -36,8 +40,8 @@ jobs:
           
       - name: Commit and Push
         run: |
-          git config --global user.name 'Admin'
-          git config --global user.email 'admin@github.com'
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add gt.json
-          git commit -m "Approved New GT ID"
+          git commit -m "Approved New GT ID: ${{ github.event.issue.title }}"
           git push
