@@ -1,0 +1,43 @@
+name: Approve GT Device ID
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  update_gt_keys:
+    if: startsWith(github.event.issue.title, 'Approve GT:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Add ID to gt.json
+        run: |
+          ID=$(echo "${{ github.event.issue.title }}" | cut -d':' -f2 | xargs)
+          python3 -c "
+          import json
+          import os
+
+          file_name = 'gt.json'
+          if not os.path.exists(file_name):
+              data = {'approved_devices': []}
+          else:
+              with open(file_name, 'r') as f:
+                  try:
+                      data = json.load(f)
+                  except:
+                      data = {'approved_devices': []}
+
+          if '$ID' not in data['approved_devices']:
+              data['approved_devices'].append('$ID')
+              with open(file_name, 'w') as f:
+                  json.dump(data, f, indent=2)
+          "
+          
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'Admin'
+          git config --global user.email 'admin@github.com'
+          git add gt.json
+          git commit -m "Approved New GT ID"
+          git push
